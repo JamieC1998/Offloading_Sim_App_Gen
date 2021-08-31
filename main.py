@@ -52,13 +52,12 @@ def exp_sample(time, application_size):
     return lambda_val
 
 
-def main():
+def main(application_count):
     max_layer_size = 5
     max_time = random.uniform(15, 20)
-    number_of_applications = random.randrange(1, 5)
     applications = []
 
-    for x in range(0, number_of_applications):
+    for x in range(0, application_count):
         applications.append(
             generate_applications(max_layer_size, x))
 
@@ -147,4 +146,7 @@ def generate_applications(max_layer_size, count):
 
 
 if __name__ == "__main__":
-    main()
+    application_count = 1
+    if len(sys.argv) > 1:
+        application_count = int(sys.argv[1])
+    main(application_count)
