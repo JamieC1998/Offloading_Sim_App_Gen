@@ -16,23 +16,24 @@ def get_task_perm(name):
     }
 
 
-def log_info(applications, max_time):
-    count = 0
-    print(max_time)
-    print(len(applications))
-    for tasks in applications:
-        print(len(tasks))
-        count = count + exp_sample(max_time, len(applications))
-        print(count)
-        for task in tasks:
-            item = task[0]
-            print(f'{item["name"]} {item["mi"]} {item["ram"]} {item["data_in"]} {item["data_out"]} {item["storage"]} {item["offload"]} {item["cores"]}')
+def log_info(applications, max_time, output_file_name):
+    with open(output_file_name, 'w') as f:
+        count = 0
+        f.write(f"{max_time}\n")
+        f.write(f"{len(applications)}\n")
+        for tasks in applications:
+            f.write(f"{len(tasks)}\n")
+            count = count + exp_sample(max_time, len(applications))
+            f.write(f"{count}")
+            for task in tasks:
+                item = task[0]
+                f.write(f'{item["name"]} {item["mi"]} {item["ram"]} {item["data_in"]} {item["data_out"]} {item["storage"]} {item["offload"]} {item["cores"]}\n')
 
-            output_str = ""
-            for index in task[1]:
-                output_str = f'{output_str}{index} '
-            output_str = output_str.strip()
-            print(output_str)
+                output_str = ""
+                for index in task[1]:
+                    output_str = f'{output_str}{index} '
+                output_str = output_str.strip()
+                f.write(f"{output_str}\n")
     return
 
 
@@ -52,7 +53,7 @@ def exp_sample(time, application_size):
     return lambda_val
 
 
-def main(application_count):
+def main(application_count, output_file_name):
     max_layer_size = 5
     max_time = random.uniform(15, 20)
     applications = []
@@ -61,7 +62,7 @@ def main(application_count):
         applications.append(
             generate_applications(max_layer_size, x))
 
-    log_info(applications, max_time)
+    log_info(applications, max_time, output_file_name)
     return
 
 
@@ -147,6 +148,8 @@ def generate_applications(max_layer_size, count):
 
 if __name__ == "__main__":
     application_count = 1
+    output_file_name = "applications_file.txt"
     if len(sys.argv) > 1:
         application_count = int(sys.argv[1])
-    main(application_count)
+        output_file_name = str(sys.argv[2])
+    main(application_count, output_file_name)
