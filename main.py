@@ -24,7 +24,7 @@ def log_info(applications, max_time, output_file_name):
         for tasks in applications:
             f.write(f"{len(tasks)}\n")
             count = count + exp_sample(max_time, len(applications))
-            f.write(f"{count}")
+            f.write(f"{count}\n")
             for task in tasks:
                 item = task[0]
                 f.write(f'{item["name"]} {item["mi"]} {item["ram"]} {item["data_in"]} {item["data_out"]} {item["storage"]} {item["offload"]} {item["cores"]}\n')
