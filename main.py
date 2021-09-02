@@ -12,7 +12,10 @@ def get_task_perm(name):
         "data_in": random.randrange(1, 50),
         "data_out": random.randrange(1, 50),
         "cores": random.randrange(1, 4),
-        "offload": random.randrange(0, 1)
+        "offload": random.choices(
+            population=[0, 1],
+            weights=[0.3, 0.7],
+            k=1)[0]
     }
 
 
@@ -27,7 +30,8 @@ def log_info(applications, max_time, output_file_name):
             f.write(f"{count}\n")
             for task in tasks:
                 item = task[0]
-                f.write(f'{item["name"]} {item["mi"]} {item["ram"]} {item["data_in"]} {item["data_out"]} {item["storage"]} {item["offload"]} {item["cores"]}\n')
+                f.write(
+                    f'{item["name"]} {item["mi"]} {item["ram"]} {item["data_in"]} {item["data_out"]} {item["storage"]} {item["offload"]} {item["cores"]}\n')
 
                 output_str = ""
                 for index in task[1]:
@@ -115,7 +119,8 @@ def generate_applications(max_layer_size, count):
             options = []
 
             if last_layer_size != 0:
-                options = retrieve_options(inner_layers, last_layer_size, input_layer_size)
+                options = retrieve_options(
+                    inner_layers, last_layer_size, input_layer_size)
             else:
                 number_links = 0
                 if input_layer_size > 1:
@@ -132,7 +137,8 @@ def generate_applications(max_layer_size, count):
 
         last_layer_size = get_last_layer_size(inner_layers)
 
-        options = retrieve_options(inner_layers, last_layer_size, input_layer_size)
+        options = retrieve_options(
+            inner_layers, last_layer_size, input_layer_size)
 
         output_layer.append((task, options))
 
