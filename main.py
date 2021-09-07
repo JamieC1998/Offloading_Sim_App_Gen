@@ -26,7 +26,6 @@ def log_info(applications, max_time, output_file_name):
         f.write(f"{len(applications)}\n")
         for tasks in applications:
             f.write(f"{len(tasks)}\n")
-            count = count + exp_sample(max_time, len(applications))
             f.write(f"{count}\n")
             for task in tasks:
                 item = task[0]
@@ -38,6 +37,7 @@ def log_info(applications, max_time, output_file_name):
                     output_str = f'{output_str}{index} '
                 output_str = output_str.strip()
                 f.write(f"{output_str}\n")
+            count = count + exp_sample(max_time, len(applications))
     return
 
 
@@ -59,7 +59,8 @@ def exp_sample(time, application_size):
 
 def main(application_count, output_file_name):
     max_layer_size = 5
-    max_time = random.uniform(15, 20)
+    # max_time = random.uniform(15, 20)
+    max_time = 20
     applications = []
 
     for x in range(0, application_count):
