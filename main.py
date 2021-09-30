@@ -2,9 +2,11 @@ import random
 import math
 import sys
 
+app_task_count = 0
 
 def get_task_perm(name):
-    return {
+    global app_task_count
+    res = {
         "name": name,
         "mi": random.randrange(1, 10),
         "ram": round(random.uniform(1, 4), 2),
@@ -15,8 +17,11 @@ def get_task_perm(name):
         "offload": random.choices(
             population=[0, 1],
             weights=[0.3, 0.7],
-            k=1)[0]
+            k=1)[0],
+        "id": app_task_count
     }
+    app_task_count = app_task_count + 1
+    return res
 
 
 def log_info(applications, max_time, output_file_name):
@@ -94,8 +99,12 @@ def retrieve_options(layer_list, last_layer_size, input_layer_size):
 
 
 def generate_applications(max_layer_size, count):
-    input_layer_size = random.randrange(1, max_layer_size)
-    output_layer_size = random.randrange(1, max_layer_size)
+    global app_task_count
+
+    app_task_count = 0
+
+    input_layer_size = 1
+    output_layer_size = 1
     inner_layer_count = random.randrange(1, max_layer_size)
 
     input_layer = []
@@ -105,7 +114,7 @@ def generate_applications(max_layer_size, count):
 
     # GENERATING INPUT LAYER
     for i in range(input_layer_size):
-        input_layer.append((get_task_perm(f'APP_{count}_Input_Layer_{i}'), []))
+        input_layer.append((get_task_perm(f'APP_{count}_Input_Layer_{i}'), [], []))
 
     # GENERATING INNER LAYERS
     for i in range(inner_layer_count):
@@ -117,19 +126,20 @@ def generate_applications(max_layer_size, count):
 
             last_layer_size = get_last_layer_size(inner_layers)
 
-            options = []
+            in_edges = []
+            out_edges = []
 
-            if last_layer_size != 0:
-                options = retrieve_options(
-                    inner_layers, last_layer_size, input_layer_size)
-            else:
-                number_links = 0
-                if input_layer_size > 1:
-                    number_links = random.randrange(1, input_layer_size)
+            # if last_layer_size != 0:
+            #     options = retrieve_options(
+            #         inner_layers, last_layer_size, input_layer_size)
+            # else:
+            #     number_links = 1
+            #     if input_layer_size > 1:
+            #         number_links = random.randrange(1, input_layer_size)
 
-                options = random.sample(range(input_layer_size), number_links)
+            #     options = random.sample(range(input_layer_size), number_links)
 
-            layer.append((task, options))
+            layer.append((task, in_edges, out_edges))
         inner_layers.append(layer)
 
     # GENERATING OUTPUT LAYER
@@ -138,11 +148,42 @@ def generate_applications(max_layer_size, count):
 
         last_layer_size = get_last_layer_size(inner_layers)
 
-        options = retrieve_options(
-            inner_layers, last_layer_size, input_layer_size)
+        in_edges = []
+        out_edges = []
+        # options = retrieve_options(
+        #     inner_layers, last_layer_size, input_layer_size)
 
-        output_layer.append((task, options))
+        output_layer.append((task, in_edges, out_edges))
 
+    for i in range(0, len(inner_layers)):
+        for x in range(0, len(inner_layers[i])):
+            if(i == 0):
+                input_layer[0][2].append(inner_layers[i][x][0]["id"])
+                inner_layers[i][x][1].append(input_layer[0][0]["id"])
+
+            if len(inner_layers[i][x][1]) == 0:
+                in_edge_count = 1
+                
+                if len(inner_layers[i - 1]) > 1:
+                    in_edge_count = random.randrange(1, len(inner_layers[i - 1]))
+                in_edge_indices = random.sample(range(len(inner_layers[i - 1])), in_edge_count)
+
+                for edge_index in in_edge_indices:
+                    inner_layers[i][x][1].append(inner_layers[i - 1][edge_index][0]["id"])
+                    inner_layers[i - 1][edge_index][2].append(inner_layers[i][x][0]["id"])
+
+            if len(inner_layers[i][x][2]) == 0 and i < len(inner_layers) - 1:
+                out_edge_count = 1
+                if len(inner_layers[i + 1]) > 1:
+                    out_edge_count = random.randrange(1, len(inner_layers[i + 1]))
+                out_edge_indices = random.sample(range(len(inner_layers[i + 1])), out_edge_count)
+
+                for edge_index in out_edge_indices:
+                    inner_layers[i][x][2].append(inner_layers[i + 1][edge_index][0]["id"])
+                    inner_layers[i + 1][edge_index][1].append(inner_layers[i][x][0]["id"])
+            if i == len(inner_layers) - 1:
+                output_layer[0][1].append(inner_layers[i][x][0]["id"])
+                inner_layers[i][x][2].append(output_layer[0][0]["id"])
     res = input_layer
 
     for x in inner_layers:
