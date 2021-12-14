@@ -197,6 +197,9 @@ def generate_applications(app_name, app_templates, application_count) -> dict:
             res[key]["layers"][x]["mobile"] = res[key]["layers"][x]["mobile"] / 1000
             res[key]["layers"][x]["edge"] = res[key]["layers"][x]["edge"] / 1000
             res[key]["layers"][x]["cloud"] = res[key]["layers"][x]["cloud"] / 1000
+            res[key]["layers"][x]["data_in"] = res[key]["layers"][x]["data_in"] / 1000000
+            res[key]["layers"][x]["data_out"] = res[key]["layers"][x]["data_out"] / 1000000
+            res[key]["layers"][x]["storage"] = res[key]["layers"][x]["data_out"] + res[key]["layers"][x]["data_in"]
         offload_time = offload_time + exp_sample(sim_time, application_count)
     return res
 
