@@ -7,10 +7,8 @@ import copy
 
 app_task_count = 0
 sim_time = 100
-# templates_dir = ".templates/"
-# execution_dir = ".execution/"
-templates_dir = "/home/jamiec/Documents/Work/PhD/Offloading_Sim_App_Gen/templates"
-execution_dir = "/home/jamiec/Documents/Work/PhD/Offloading_Sim_App_Gen/execution"
+templates_dir = "./templates/"
+execution_dir = "./execution/"
 json_ext = ".json"
 execution_file_break_char = "___"
 
@@ -170,13 +168,20 @@ def exp_sample(time, application_size):
     return lambda_val
 
 
+def sorted_template(key, template):
+    template["layers"].sort(key=lambda x: sum(x["dependencies"]) if len(x["dependencies"]) > 0 else -1)
+    return template
+
+
 def main(application_count, output_file_name, gpus):
     app_templates = generate_template(gpus)
 
-    applications = {x: generate_applications(x, app_templates, application_count) for x in list(app_templates.keys()) + ["mixed"]}
+    app_templates = {k: sorted_template(k, v) for k, v in app_templates.items()}
+
+    applications = {x: generate_applications(x, app_templates, application_count) for x in ["inception_v4"]}
 
 
-    log_info(applications["mixed"], sim_time, output_file_name)
+    log_info(applications["inception_v4"], sim_time, output_file_name)
     return
 
 
