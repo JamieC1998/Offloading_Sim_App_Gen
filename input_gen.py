@@ -178,7 +178,7 @@ def main(application_count, output_file_name, gpus):
 
     app_templates = {k: sorted_template(k, v) for k, v in app_templates.items()}
 
-    applications = {x: generate_applications(x, app_templates, application_count) for x in app_templates.keys() + ["mixed"]}
+    applications = {x: generate_applications(x, app_templates, application_count) for x in list(app_templates.keys()) + ["mixed"]}
 
 
     log_info(applications["inception_v4"], sim_time, output_file_name)
