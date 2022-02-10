@@ -131,3 +131,5 @@ dmypy.json
 .pyre/
 templates/
 execution/
+.DS_Store
+applications_file.txt
