@@ -5,8 +5,6 @@ import os
 import json
 import copy
 
-from matplotlib import use
-
 app_task_count = 0
 sim_time = 4
 templates_dir = "/Users/jamiecotter/Documents/Work/PhD/MECO_output_analyser/templates"
